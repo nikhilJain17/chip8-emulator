@@ -1,3 +1,5 @@
+from instruction import Instruction, OpType
+
 class CPU:
     def __init__(self, program):
         self.pc = 0x000
@@ -10,8 +12,7 @@ class CPU:
     
     def execute(self):
         for self.pc in range(0,len(self.program),2):
-            instr = self.program[self.pc:self.pc+2].hex()
+            instr = Instruction(self.program[self.pc:self.pc+2])
             print(self.pc, instr)
             if instr == "00e0":
                 print("Clear display")
-            
