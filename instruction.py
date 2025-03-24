@@ -11,6 +11,8 @@ class Instruction:
             return OpType.BITOP
         elif self.bytes[0] == "8" and self.bytes[3] in set(["4", "5", "7"]):
             return OpType.MATH
+        elif self.bytes[0] == "8" and self.bytes[3] == "0":
+            return OpType.ASSIGN
         elif self.bytes[0] == "6" or self.bytes[0] == "7":
             return OpType.CONST
         return OpType.UNKNOWN

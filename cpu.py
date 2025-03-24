@@ -22,11 +22,20 @@ class CPU:
             elif self.curr_instr.optype == OpType.CONST:
                 self.execute_const_instr()
                 self.dump_registers()
+            elif self.curr_instr.optype == OpType.ASSIGN:
+                self.execute_assign_instr()
+                self.dump_registers()
             elif self.curr_instr.optype == OpType.UNKNOWN:
                 # raise ValueError("Unknown instruction", instr)
                 pass
             else:
                 raise ValueError("Operation type is not set", self.curr_instr)
+
+    def execute_assign_instr(self):
+        reg_x, reg_y = int(self.curr_instr.bytes[1], 16), int(self.curr_instr.bytes[2], 16)
+        self.validate_register_operand(reg_x)
+        self.validate_register_operand(reg_y)
+        self.data_registers[reg_x] = self.data_registers[reg_y]
 
     def execute_const_instr(self):
         reg_x = int(self.curr_instr.bytes[1], 16)
@@ -62,7 +71,7 @@ class CPU:
     def dump_registers(self):
         s = "_" * 80 + "\n\tREGISTERS\n"
         for i in range(len(self.data_registers)):
-            s += "(V" + str(i) + ": " + hex(self.data_registers[i]) + ")\t"
+            s += "(V" + ("%x" % i) + ": " + hex(self.data_registers[i]) + ")\t"
             if (i + 1) % 4 == 0:
                 s += "\n"
         s += "(I: " + hex(self.addr_register) + ")\n" + "_" * 80 + "\n"
