@@ -8,8 +8,7 @@ class Emulator:
 
     def __init__(self, program_file):
         self.program_file = program_file
-        self.binary_program = self.load_program()
-        self.cpu = cpu.CPU()
+        self.program = self.load_program()
     
     def load_program(self):
         """Loads raw binary program from disk
@@ -17,15 +16,11 @@ class Emulator:
         with open(self.program_file, "rb") as f:
             return bytearray(f.read())
 
-    def parse_program(self):
-        """Parses raw binary program into Instruction type
-        """
-        pass
-
     def emulate(self):
         """Launches program execution
         """
-        pass
+        chip8 = cpu.CPU(self.program)
+        chip8.execute()
 
 
 if __name__ == "__main__":
