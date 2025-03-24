@@ -2,7 +2,7 @@ import argparse
 import cpu
 
 class Emulator:
-    """Loads program, parses program, and sets up CPU, which orchestrates and delegates
+    """Loads program and sets up CPU, which orchestrates and delegates
     other components such as memory, APU, graphics, registers
     """
 

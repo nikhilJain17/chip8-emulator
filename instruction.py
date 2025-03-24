@@ -1,20 +1,22 @@
 import enum
 class Instruction:
     def __init__(self, instr_bytes):
-        self.instr = instr_bytes.hex()
+        self.bytes = instr_bytes.hex()
         self.optype = self.get_optype()
 
     def get_optype(self):
         """Tag instruction with operation type metadata
         """
-        if self.instr[0] == "8" and self.instr[3] in set(["1", "2", "3", "6", "E"]):
-                return OpType.BITOP
-        elif self.instr[0] == "8" and self.instr[3] in set(["4", "5", "7"]):
-             return OpType.MATH
+        if self.bytes[0] == "8" and self.bytes[3] in set(["1", "2", "3", "6", "E"]):
+            return OpType.BITOP
+        elif self.bytes[0] == "8" and self.bytes[3] in set(["4", "5", "7"]):
+            return OpType.MATH
+        elif self.bytes[0] == "6" or self.bytes[0] == "7":
+            return OpType.CONST
         return OpType.UNKNOWN
     
     def __str__(self):
-        return(self.optype.name + ":" + self.instr)
+        return(self.optype.name + ":" + self.bytes)
 
 
 class OpType(enum.Enum):
