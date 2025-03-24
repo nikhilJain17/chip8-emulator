@@ -1,18 +1,11 @@
 import enum
 class Instruction:
-    """Class encapsulating binary instructions
-
-    - type of instr
-    - operands? will need to make lots of diff subclasses etc
-        - naur just process in opcode execution helper functions
-    - binary repr
-    """
     def __init__(self, instr_bytes):
         self.instr = instr_bytes.hex()
-        self.opcode = self.get_opcode()
+        self.optype = self.get_optype()
 
-    def get_opcode(self):
-        """Tag instruction with opcode metadata
+    def get_optype(self):
+        """Tag instruction with operation type metadata
         """
         if self.instr[0] == "8" and self.instr[3] in set(["1", "2", "3", "6", "E"]):
                 return OpType.BITOP
@@ -21,7 +14,7 @@ class Instruction:
         return OpType.UNKNOWN
     
     def __str__(self):
-        return(self.opcode.name + ":" + self.instr)
+        return(self.optype.name + ":" + self.instr)
 
 
 class OpType(enum.Enum):

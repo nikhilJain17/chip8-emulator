@@ -14,5 +14,14 @@ class CPU:
         for self.pc in range(0,len(self.program),2):
             instr = Instruction(self.program[self.pc:self.pc+2])
             print(self.pc, instr)
-            if instr == "00e0":
-                print("Clear display")
+            match instr.opcode:
+                case OpType.MATH:
+                    pass
+                case OpType.BITOP:
+                    pass
+                case OpType.UNKNOWN:
+                    print("Invalid instruction", instr)
+                    exit(-1)
+                case _:
+                    raise ValueError("op type is not set", instr)
+
