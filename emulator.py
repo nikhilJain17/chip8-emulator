@@ -1,0 +1,36 @@
+import argparse
+import cpu
+
+class Emulator:
+    """Loads program, parses program, and sets up CPU, which orchestrates and delegates
+    other components such as memory, APU, graphics, registers
+    """
+
+    def __init__(self, program_file):
+        self.program_file = program_file
+        self.binary_program = self.load_program()
+        self.cpu = cpu.CPU()
+    
+    def load_program(self):
+        """Loads raw binary program from disk
+        """
+        with open(self.program_file, "rb") as f:
+            return bytearray(f.read())
+
+    def parse_program(self):
+        """Parses raw binary program into Instruction type
+        """
+        pass
+
+    def emulate(self):
+        """Launches program execution
+        """
+        pass
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--program", required=True)
+    args = parser.parse_args()
+    emulator = Emulator(args.program)
+    emulator.emulate()
