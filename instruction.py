@@ -15,6 +15,13 @@ class Instruction:
             return OpType.ASSIGN
         elif self.bytes[0] == "6" or self.bytes[0] == "7":
             return OpType.CONST
+        elif self.bytes[0] == "a" or (self.bytes[0] == "f" and self.bytes[3] in set(["1e", "29", "55", "65"])):
+            return OpType.MEM
+        elif self.bytes[0] == "d" or self.bytes == "00e0":
+            return OpType.DISPLAY
+        elif self.bytes[0] == "3" or self.bytes[0] == "4" or (self.bytes[0] == "5" and self.bytes[3] == "0") or (self.bytes[0] == "9" and self.bytes[3] == "0"):
+            return OpType.COND
+
         return OpType.UNKNOWN
     
     def __str__(self):
