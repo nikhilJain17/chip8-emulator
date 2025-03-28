@@ -47,6 +47,26 @@ def test_register_sub():
         0x85, 0x35
     ])
     cpu = CPU(program)
+    cpu.execute()
+    cpu.dump_registers()
     assert cpu.data_registers[3] == 0x2
     assert cpu.data_registers[5] == 0x8
     assert cpu.data_registers[0xF] == 0x0
+
+def test_register_sub_overflow():
+    """
+    Subtraction no overflow
+    Load 0xFF into V8, 0x2 into V6, V6 := V6 - V8 
+    """
+    program = bytearray([
+        0x66, 0x02,
+        0x68, 0xFF,
+        0x86, 0x85
+    ])
+    cpu = CPU(program)
+    cpu.execute()
+    cpu.dump_registers()
+    assert cpu.data_registers[8] == 0xFF
+    assert cpu.data_registers[6] == 0x3
+    assert cpu.data_registers[0xF] == 0x1
+
