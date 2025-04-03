@@ -22,20 +22,24 @@ class CPU:
     ]
 
     def __init__(self, program):
-        self.pc = 0x000
         self.program = program
         self.stack = [0x0 for _ in range(48)] # 48 byte stack
-        self.mem = [0x0 for _ in range(4000)] # 4k memory
+        self.mem = bytearray([0x00 for _ in range(4000)]) # 4k memory
+        # load font into memory
         self.mem[0x50:0x9F] = self.FONT_DATA
+        # load program into memory        
+        self.pc = 0x200
+        for i, instr in enumerate(self.program):
+            self.mem[0x200 + i] = instr
         # 16 data registers, 1 addr register
         self.data_registers = [0x00 for _ in range(16)] 
         self.addr_register = 0x000
         self.display = Display()
     
     def execute(self):
-        while self.pc < len(self.program):
-            self.curr_instr = Instruction(self.program[self.pc:self.pc+2])
-            print(self.curr_instr, self.pc)
+        while self.pc < 0x200 + len(self.program):
+            self.curr_instr = Instruction(self.mem[self.pc:self.pc+2])
+            # print(self.curr_instr, hex(self.pc))
             if self.curr_instr.optype == OpType.MATH:
                 self.execute_math_instr()
                 # self.dump_registers()
@@ -69,7 +73,10 @@ class CPU:
         if self.curr_instr.bytes[0] == "b":
             self.pc = self.data_registers[0] + int(self.curr_instr.bytes[1:], 16)
         elif self.curr_instr.bytes[0] == "1":
+            # each memory location holds 8 bits == 1 byte == 2 hex digits
             self.pc = int(self.curr_instr.bytes[1:], 16)
+        else:
+            raise NotImplementedError("instruction", self.curr_instr.bytes)
 
     def execute_cond_instr(self):
         if self.curr_instr.bytes[0] == "3" or self.curr_instr.bytes[0] == "4":
