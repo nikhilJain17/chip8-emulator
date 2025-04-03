@@ -33,9 +33,9 @@ class CPU:
         self.display = Display()
     
     def execute(self):
-        for self.pc in range(0,len(self.program),2):
+        while self.pc < len(self.program):
             self.curr_instr = Instruction(self.program[self.pc:self.pc+2])
-            # print(self.pc, self.curr_instr)
+            print(self.curr_instr, self.pc)
             if self.curr_instr.optype == OpType.MATH:
                 self.execute_math_instr()
                 # self.dump_registers()
@@ -54,24 +54,33 @@ class CPU:
                 pass
             elif self.curr_instr.optype == OpType.COND:
                 self.execute_cond_instr()
+            elif self.curr_instr.optype == OpType.FLOW:
+                self.execute_flow_instr()
             elif self.curr_instr.optype == OpType.UNKNOWN:
-                # print("unknown", self.pc, self.curr_instr)
+                # print("Unknown", self.pc, self.curr_instr)
 
                 # raise ValueError("Unknown instruction", instr)
                 pass
             else:
                 raise ValueError("Operation type is not set", self.curr_instr)
+            self.pc += 2
+
+    def execute_flow_instr(self):
+        if self.curr_instr.bytes[0] == "b":
+            self.pc = self.data_registers[0] + int(self.curr_instr.bytes[1:], 16)
+        elif self.curr_instr.bytes[0] == "1":
+            self.pc = int(self.curr_instr.bytes[1:], 16)
 
     def execute_cond_instr(self):
         if self.curr_instr.bytes[0] == "3" or self.curr_instr.bytes[0] == "4":
             reg_x = int(self.curr_instr.bytes[1], 16)
             self.validate_register_operand(reg_x)
-            val = self.curr_instr.bytes[2:]
+            val = int(self.curr_instr.bytes[2:], 16)
             should_skip = (self.curr_instr.bytes[0] == "3" and self.data_registers[reg_x] == val) \
                 or (self.curr_instr.bytes[0] == "4" and self.data_registers[reg_x] != val)
             if should_skip:
                 self.pc += 2
-        elif (self.curr_instr.bytes[0] == "5" or self.curr_instr == "9") and self.curr_instr.bytes[-1] == "0":
+        elif (self.curr_instr.bytes[0] == "5" or self.curr_instr.bytes[0] == "9") and self.curr_instr.bytes[-1] == "0":
             reg_x = int(self.curr_instr.bytes[1], 16)
             reg_y = int(self.curr_instr.bytes[2], 16)
             self.validate_register_operand(reg_x)
@@ -95,12 +104,9 @@ class CPU:
                 self.data_registers[-1] = 1
             else:
                 self.data_registers[-1] = 0
-        elif self.curr_instr.bytes[0] == "a":
-            self.addr_register = int(self.curr_instr[1:], 16)
 
     def execute_mem_instr(self):
         # 4 memory instructions
-        print("curr instr", self.curr_instr)
         if self.curr_instr.bytes[0] == "a":
             self.addr_register = int(self.curr_instr.bytes[1:], 16)
             return

@@ -21,6 +21,8 @@ class Instruction:
             return OpType.DISPLAY
         elif self.bytes[0] == "3" or self.bytes[0] == "4" or (self.bytes[0] == "5" and self.bytes[3] == "0") or (self.bytes[0] == "9" and self.bytes[3] == "0"):
             return OpType.COND
+        elif self.bytes[0] in set(["b", "1", "2"]) or self.bytes == "00ee":
+            return OpType.FLOW
 
         return OpType.UNKNOWN
     

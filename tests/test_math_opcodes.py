@@ -55,7 +55,7 @@ def test_register_sub():
 
 def test_register_sub_overflow():
     """
-    Subtraction no overflow
+    Subtraction with overflow
     Load 0xFF into V8, 0x2 into V6, V6 := V6 - V8 
     """
     program = bytearray([
@@ -68,5 +68,40 @@ def test_register_sub_overflow():
     cpu.dump_registers()
     assert cpu.data_registers[8] == 0xFF
     assert cpu.data_registers[6] == 0x3
+    assert cpu.data_registers[0xF] == 0x1
+
+def test_register_sub_swapped_no_overflow():
+    """
+    Swapped subtraction no overflow
+    Load 0xFF into V1, 0x2 into V2, V2 := V1 - V2 
+    """
+    program = bytearray([
+        0x61, 0xFF,
+        0x62, 0x02,
+        0x82, 0x17
+    ])
+    cpu = CPU(program)
+    cpu.execute()
+    cpu.dump_registers()
+    assert cpu.data_registers[1] == 0xFF
+    assert cpu.data_registers[2] == 0xFD
+    assert cpu.data_registers[0xF] == 0x0
+
+
+def test_register_sub_swapped_overflow():
+    """
+    Swapped subtraction with overflow
+    Load 0x10 into V8, 0x2 into V6, V8 := V6 - V8 
+    """
+    program = bytearray([
+        0x66, 0x02,
+        0x68, 0x10,
+        0x88, 0x67
+    ])
+    cpu = CPU(program)
+    cpu.execute()
+    cpu.dump_registers()
+    assert cpu.data_registers[6] == 0x2
+    assert cpu.data_registers[8] == 0xf2
     assert cpu.data_registers[0xF] == 0x1
 
